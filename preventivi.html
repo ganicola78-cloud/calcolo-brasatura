@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Preventivi al volo</title>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --text: #142033;
+      --muted: #667085;
+      --primary: #0f5f8f;
+      --primary-dark: #0a4568;
+      --line: #d7e1ec;
+      --soft: #eaf3f8;
+      --success-soft: #ecfdf3;
+      --success-text: #067647;
+      --warning-soft: #fff8e6;
+      --warning-text: #8a5a00;
+      --danger: #b42318;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 24px rgba(15, 95, 143, 0.18);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .subtitle {
+      margin-top: 6px;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+
+    .total-box {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 14px 18px;
+      border-radius: 16px;
+      text-align: right;
+      min-width: 230px;
+    }
+
+    .total-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      opacity: 0.9;
+    }
+
+    .total {
+      font-size: 32px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .card {
+      margin-top: 14px;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 6px 20px rgba(20, 32, 51, 0.08);
+    }
+
+    .section-title {
+      margin: 10px 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      font-size: 14px;
+    }
+
+    button:hover { background: var(--primary-dark); }
+
+    button.secondary {
+      background: var(--soft);
+      color: var(--primary-dark);
+      border: 1px solid var(--line);
+    }
+
+    button.secondary:hover { background: #dceef7; }
+
+    button.success {
+      background: var(--success-soft);
+      color: var(--success-text);
+      border: 1px solid #abefc6;
+    }
+
+    button.success:hover { background: #dcfae6; }
+
+    button.warning {
+      background: var(--warning-soft);
+      color: var(--warning-text);
+      border: 1px solid #f4d680;
+    }
+
+    button.warning:hover { background: #fff1c2; }
+
+    button.danger {
+      background: #fff1f0;
+      color: var(--danger);
+      border: 1px solid #ffd1cc;
+    }
+
+    button.danger:hover { background: #ffe2df; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      margin-top: 12px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 850px;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: var(--primary);
+      color: white;
+      text-align: left;
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      background: white;
+    }
+
+    tr:nth-child(even) td { background: #f7fbfe; }
+
+    input {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 16px;
+      background: white;
+    }
+
+    input:focus {
+      outline: 2px solid #b7dcef;
+      border-color: var(--primary);
+    }
+
+    .money, .number { text-align: right; }
+
+    .row-total {
+      text-align: right;
+      font-weight: 800;
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .delete-cell {
+      text-align: center;
+      width: 60px;
+    }
+
+    .small-btn {
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .footer-total {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+
+    .footer-total div {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px;
+      border-radius: 16px;
+      font-size: 24px;
+      font-weight: 800;
+      min-width: 260px;
+      text-align: right;
+    }
+
+    .note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 12px;
+      padding: 11px 13px;
+      border-radius: 12px;
+      background: var(--success-soft);
+      color: var(--success-text);
+      border: 1px solid #abefc6;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .hidden-file {
+      display: none;
+    }
+
+    @media (max-width: 650px) {
+      .wrap { padding: 8px; }
+      h1 { font-size: 22px; }
+      .total-box { width: 100%; text-align: left; }
+      .total { font-size: 29px; }
+      button { width: 100%; }
+      .footer-total div { width: 100%; }
+    }
+
+    @media print {
+      body { background: white; }
+      .actions, .note, .delete-cell, .no-print, .message, .section-title { display: none !important; }
+      .wrap { max-width: none; padding: 0; }
+      .header, .card { box-shadow: none; }
+      input { border: none; padding: 0; }
+      th { background: #eeeeee !important; color: black !important; }
+      .header, .footer-total div { background: #eeeeee !important; color: black !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1>Preventivi al volo</h1>
+        <div class="subtitle">Calcolo rapido con importo, quantità e maggiorazione percentuale.</div>
+      </div>
+      <div class="total-box">
+        <div class="total-label">Totale finale</div>
+        <div class="total" id="grandTotal">€ 0,00</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div id="message" class="message"></div>
+
+      <div class="section-title">Preventivo</div>
+      <div class="actions">
+        <button type="button" onclick="addRow()">+ Aggiungi riga</button>
+        <button type="button" class="secondary" onclick="resetQuantita()">Azzera quantità</button>
+        <button type="button" class="secondary" onclick="resetMaggiorazione()">Azzera maggiorazione %</button>
+        <button type="button" class="secondary" onclick="resetQuantitaEMaggiorazione()">Azzera quantità e %</button>
+        <button type="button" class="danger" onclick="clearAll()">Svuota tutto</button>
+      </div>
+
+      <div class="section-title">Listino</div>
+      <div class="actions">
+        <button type="button" class="success" onclick="saveListino()">Salva listino</button>
+        <button type="button" class="success" onclick="loadListino()">Carica listino</button>
+        <button type="button" class="warning" onclick="exportListino()">Esporta listino</button>
+        <button type="button" class="warning" onclick="document.getElementById('fileListino').click()">Importa listino</button>
+        <input id="fileListino" class="hidden-file" type="file" accept=".json,application/json" onchange="importListino(event)">
+      </div>
+
+      <div class="section-title">Invio al collega</div>
+      <div class="actions">
+        <button type="button" class="secondary" onclick="sharePreventivo()">Condividi preventivo</button>
+        <button type="button" class="secondary" onclick="exportCSV()">Esporta preventivo CSV</button>
+        <button type="button" class="secondary" onclick="window.print()">Stampa / PDF</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Voce</th>
+              <th>Importo</th>
+              <th>Quantità</th>
+              <th>Maggiorazione %</th>
+              <th>Totale riga</th>
+              <th class="delete-cell no-print"></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="footer-total">
+        <div id="bottomTotal">Totale: € 0,00</div>
+      </div>
+
+      <div class="note">
+        <b>Salva listino</b> conserva Voce, Importo e Maggiorazione %. 
+        <b>Carica listino</b> li ripristina e azzera le quantità.
+        <b>Esporta listino</b> crea un file di backup da inviare o conservare.
+        <b>Importa listino</b> carica un backup salvato in precedenza.
+        Per inviare il preventivo a un collega usa <b>Condividi preventivo</b>, oppure <b>Stampa / PDF</b> per creare un PDF.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "preventivi_al_volo_v4";
+    const LISTINO_KEY = "preventivi_al_volo_listino_v2";
+    const tbody = document.getElementById("rows");
+
+    function newRow(voce = "", importo = "", quantita = "", maggiorazione = "") {
+      return { voce, importo, quantita, maggiorazione };
+    }
+
+    let data = loadData();
+
+    function loadData() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length) return parsed;
+        }
+      } catch (e) {}
+      return [newRow(), newRow(), newRow()];
+    }
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function showMessage(text) {
+      const box = document.getElementById("message");
+      box.textContent = text;
+      box.style.display = "block";
+      clearTimeout(window.messageTimer);
+      window.messageTimer = setTimeout(() => {
+        box.style.display = "none";
+      }, 3000);
+    }
+
+    function parseNumber(value) {
+      if (value === null || value === undefined || value === "") return 0;
+      let clean = String(value)
+        .replace("€", "")
+        .replace("%", "")
+        .replace(/\s/g, "")
+        .trim();
+
+      if (clean.includes(",") && clean.includes(".")) {
+        clean = clean.replace(/\./g, "").replace(",", ".");
+      } else {
+        clean = clean.replace(",", ".");
+      }
+
+      const num = Number(clean);
+      return Number.isFinite(num) ? num : 0;
+    }
+
+    function euro(value) {
+      return new Intl.NumberFormat("it-IT", {
+        style: "currency",
+        currency: "EUR"
+      }).format(value || 0);
+    }
+
+    function rowTotal(row) {
+      const importo = parseNumber(row.importo);
+      const quantita = parseNumber(row.quantita);
+      const maggiorazione = parseNumber(row.maggiorazione);
+      return importo * quantita * (1 + maggiorazione / 100);
+    }
+
+    function escapeHtml(text) {
+      return String(text ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderAll() {
+      tbody.innerHTML = "";
+      data.forEach((row, index) => {
+        const tr = document.createElement("tr");
+        tr.dataset.index = index;
+
+        tr.innerHTML = `
+          <td><input data-field="voce" value="${escapeHtml(row.voce)}" placeholder="Codice o descrizione"></td>
+          <td><input data-field="importo" class="money" value="${escapeHtml(row.importo)}" placeholder="0,00" inputmode="decimal"></td>
+          <td><input data-field="quantita" class="number" value="${escapeHtml(row.quantita)}" placeholder="0" inputmode="decimal"></td>
+          <td><input data-field="maggiorazione" class="number" value="${escapeHtml(row.maggiorazione)}" placeholder="0" inputmode="decimal"></td>
+          <td class="row-total">${euro(rowTotal(row))}</td>
+          <td class="delete-cell no-print"><button type="button" class="danger small-btn" onclick="deleteRow(${index})">X</button></td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+      updateTotalsOnly();
+      saveData();
+    }
+
+    function updateTotalsOnly() {
+      const trs = tbody.querySelectorAll("tr");
+      trs.forEach((tr, index) => {
+        const totalCell = tr.querySelector(".row-total");
+        if (totalCell) totalCell.textContent = euro(rowTotal(data[index]));
+      });
+
+      const total = data.reduce((sum, row) => sum + rowTotal(row), 0);
+      document.getElementById("grandTotal").textContent = euro(total);
+      document.getElementById("bottomTotal").textContent = "Totale: " + euro(total);
+      saveData();
+    }
+
+    tbody.addEventListener("input", function(event) {
+      const input = event.target;
+      if (!input.matches("input[data-field]")) return;
+
+      const tr = input.closest("tr");
+      const index = Number(tr.dataset.index);
+      const field = input.dataset.field;
+
+      data[index][field] = input.value;
+      updateTotalsOnly();
+    });
+
+    function addRow() {
+      data.push(newRow());
+      renderAll();
+    }
+
+    function deleteRow(index) {
+      if (data.length <= 1) return;
+      data.splice(index, 1);
+      renderAll();
+    }
+
+    function getCleanListino() {
+      return data
+        .filter(row => row.voce || row.importo || row.maggiorazione)
+        .map(row => ({
+          voce: row.voce,
+          importo: row.importo,
+          quantita: "",
+          maggiorazione: row.maggiorazione
+        }));
+    }
+
+    function saveListino() {
+      const listino = getCleanListino();
+
+      if (!listino.length) {
+        alert("Non ci sono dati da salvare nel listino.");
+        return;
+      }
+
+      localStorage.setItem(LISTINO_KEY, JSON.stringify(listino));
+      showMessage("Listino salvato nel browser.");
+    }
+
+    function loadListino() {
+      const saved = localStorage.getItem(LISTINO_KEY);
+
+      if (!saved) {
+        alert("Non hai ancora salvato nessun listino.");
+        return;
+      }
+
+      try {
+        const listino = JSON.parse(saved);
+        if (!Array.isArray(listino) || !listino.length) {
+          alert("Listino non valido.");
+          return;
+        }
+
+        data = listino.map(row => ({
+          voce: row.voce || "",
+          importo: row.importo || "",
+          quantita: "",
+          maggiorazione: row.maggiorazione || ""
+        }));
+
+        renderAll();
+        showMessage("Listino caricato. Le quantità sono state azzerate.");
+      } catch (e) {
+        alert("Errore durante il caricamento del listino.");
+      }
+    }
+
+    function exportListino() {
+      const listino = getCleanListino();
+
+      if (!listino.length) {
+        alert("Non ci sono dati da esportare.");
+        return;
+      }
+
+      const payload = {
+        tipo: "listino_preventivi_al_volo",
+        versione: 1,
+        creatoIl: new Date().toISOString(),
+        righe: listino
+      };
+
+      downloadFile(
+        "listino-preventivi.json",
+        JSON.stringify(payload, null, 2),
+        "application/json;charset=utf-8;"
+      );
+
+      showMessage("Listino esportato come file di backup.");
+    }
+
+    function importListino(event) {
+      const file = event.target.files[0];
+      event.target.value = "";
+
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          const rows = Array.isArray(parsed) ? parsed : parsed.righe;
+
+          if (!Array.isArray(rows) || !rows.length) {
+            alert("Il file scelto non contiene un listino valido.");
+            return;
+          }
+
+          data = rows.map(row => ({
+            voce: row.voce || "",
+            importo: row.importo || "",
+            quantita: "",
+            maggiorazione: row.maggiorazione || ""
+          }));
+
+          localStorage.setItem(LISTINO_KEY, JSON.stringify(data.map(row => ({...row, quantita: ""}))));
+          renderAll();
+          showMessage("Listino importato e caricato. Le quantità sono vuote.");
+        } catch (err) {
+          alert("Non riesco a leggere questo file. Seleziona un file listino .json esportato dall'app.");
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    function resetQuantita() {
+      data = data.map(row => ({ ...row, quantita: "" }));
+      renderAll();
+    }
+
+    function resetMaggiorazione() {
+      data = data.map(row => ({ ...row, maggiorazione: "" }));
+      renderAll();
+    }
+
+    function resetQuantitaEMaggiorazione() {
+      data = data.map(row => ({ ...row, quantita: "", maggiorazione: "" }));
+      renderAll();
+    }
+
+    function clearAll() {
+      if (!confirm("Vuoi svuotare tutto il preventivo? Il listino salvato non verrà cancellato.")) return;
+      data = [newRow(), newRow(), newRow()];
+      renderAll();
+    }
+
+    function makePreventivoText() {
+      const validRows = data.filter(row =>
+        row.voce || parseNumber(row.importo) || parseNumber(row.quantita) || parseNumber(row.maggiorazione)
+      );
+
+      const lines = ["Preventivo", ""];
+
+      validRows.forEach((row, index) => {
+        lines.push(
+          `${index + 1}. ${row.voce || "Voce"} | Importo: ${euro(parseNumber(row.importo))} | Quantità: ${row.quantita || "0"} | Magg.: ${row.maggiorazione || "0"}% | Totale: ${euro(rowTotal(row))}`
+        );
+      });
+
+      const total = data.reduce((sum, row) => sum + rowTotal(row), 0);
+      lines.push("");
+      lines.push(`Totale finale: ${euro(total)}`);
+
+      return lines.join("\n");
+    }
+
+    async function sharePreventivo() {
+      const text = makePreventivoText();
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Preventivo",
+            text: text
+          });
+          return;
+        } catch (e) {
+          // Se l'utente annulla, non facciamo nulla.
+          if (e && e.name === "AbortError") return;
+        }
+      }
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showMessage("Preventivo copiato. Ora puoi incollarlo su WhatsApp, email o messaggio.");
+      } catch (e) {
+        const mail = "mailto:?subject=Preventivo&body=" + encodeURIComponent(text);
+        window.location.href = mail;
+      }
+    }
+
+    function exportCSV() {
+      const rows = [
+        ["Voce", "Importo", "Quantità", "Maggiorazione %", "Totale riga"],
+        ...data.map(row => [
+          row.voce,
+          parseNumber(row.importo).toFixed(2).replace(".", ","),
+          row.quantita,
+          row.maggiorazione,
+          rowTotal(row).toFixed(2).replace(".", ",")
+        ])
+      ];
+
+      const total = data.reduce((sum, row) => sum + rowTotal(row), 0);
+      rows.push(["", "", "", "Totale finale", total.toFixed(2).replace(".", ",")]);
+
+      const csv = rows
+        .map(line => line.map(cell => `"${String(cell).replaceAll('"', '""')}"`).join(";"))
+        .join("\n");
+
+      downloadFile("preventivo.csv", csv, "text/csv;charset=utf-8;");
+    }
+
+    function downloadFile(filename, content, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
